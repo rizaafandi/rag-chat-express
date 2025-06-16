@@ -9,14 +9,16 @@ import { Logs } from "@/common/utils/logs";
 import { ingestPDFs } from "@/common/utils/v2/ingest";
 import { Model } from "@/common/utils/v2/model";
 import { formatDocumentAsContext, retrieveDocument } from "@/common/utils/v2/retriever";
+import { ChatSchema, GetChatSchema } from "./chatModels";
 
 export const chatRegistry = new OpenAPIRegistry();
 export const chatRouter: Router = express.Router();
 
 chatRegistry.registerPath({
 	method: "get",
-	path: "/chat/ingest",
-	tags: ["Ingest Data Source"],
+	path: "/api/chat/ingest",
+	description: "Ingest PDFs from the assets directory",
+	tags: ["Chatbot"],
 	responses: createApiResponse(z.null(), "Success"),
 });
 
@@ -44,9 +46,19 @@ chatRouter.get("/ingest", async (_req: Request, res: Response) => {
 
 chatRegistry.registerPath({
 	method: "post",
-	path: "/chat",
-	tags: ["Health Care Chat"],
-	responses: createApiResponse(z.null(), "Success"),
+	path: "/api/chat/query",
+	tags: ["Chatbot"],
+	description: "Query the chatbot with a question and get a response",
+	request: {
+		body: {
+			content: {
+				"application/json": {
+					schema: GetChatSchema,
+				},
+			},
+		},
+	},
+	responses: createApiResponse(ChatSchema, "Success"),
 });
 
 chatRouter.post("/query", async (_req: Request, res: Response) => {
@@ -80,7 +92,7 @@ chatRouter.post("/query", async (_req: Request, res: Response) => {
 
 		res.status(serviceResponse.statusCode).send(serviceResponse);
 	} catch (error) {
-		const serviceResponse = ServiceResponse.success(
+		const serviceResponse = ServiceResponse.failure(
 			error as string,
 			{
 				data: null,
