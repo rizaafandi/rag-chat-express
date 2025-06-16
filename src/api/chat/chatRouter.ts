@@ -24,7 +24,7 @@ chatRegistry.registerPath({
 
 chatRouter.get("/ingest", async (_req: Request, res: Response) => {
 	try {
-		const pdfDirectory = join(process.cwd(), "src/assets/pdfs");
+		const pdfDirectory = join(process.cwd(), "src/assets/pdfs/new");
 		console.log(`PDF Directory: ${pdfDirectory}`);
 		await ingestPDFs(pdfDirectory).catch(console.error);
 
