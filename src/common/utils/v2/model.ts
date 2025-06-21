@@ -144,21 +144,30 @@ export const Model = {
 		async function completion(prompt: string, context: string, responseType: string): Promise<string> {
 			try {
 				const fullPrompt = `
-                <s>[INST] You are a helpful assistant that answers questions based only on the provided context.
+                <s>[INST] You are a helpful healtcare assistant with given context and question:
 
                 Context: ${context}
 
                 Question:  ${prompt}
 
-                Please answer the question based solely on the provided context.
+				Following are the instructions for your response:
+                1. Please answer the question based solely on the provided context.
+                2. If the context doesn't contain the information needed to answer the question, please use ${whitelistWebsite.join(", ")} as source of informations. 
+				3. If two above conditions are not met, please try to answer from other websites if possible.
+				4. If you are not able to answer, please say that you don't have enough information.
+				5. If the question is about a medical condition, please provide a detailed explanation.
+				
+				
+				
+				
                 And write a response as a ${responseType} text with fully heading formatted.
-                If the context doesn't contain the information needed to answer the question, please use ${whitelistWebsite.join(", ")} as source of informations. [/INST]</s>`;
+				[/INST]</s>`;
 
 				const model = gemini.getGenerativeModel({
 					model: "gemini-2.5-flash-preview-04-17",
 					generationConfig: {
 						temperature: 0.7,
-						maxOutputTokens: 1024,
+						maxOutputTokens: 5024,
 					},
 				});
 
